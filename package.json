@@ -18,7 +18,8 @@
     "@mui/material": "5.2.2",
     "@mui/styles": "5.2.2",
     "classnames": "2.2.6",
-    "react-table": "7.5.2"
+    "react-table": "7.5.2",
+    "match-sorter": "4.2.1"
   },
   "scripts": {
     "start": "react-scripts start",

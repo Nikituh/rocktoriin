@@ -1,24 +1,34 @@
+
 import React from 'react';
-import './App.css';
+import GridContainer from './BaseComponents/GridContainer';
+import GridItem from './BaseComponents/GridItem';
+import Table from "./BaseComponents/Table";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import questions from "./Model/questions.json";
+
+export default class App extends React.Component {
+
+	header(header: string, accessor: string) {
+		return { Header: header, accessor: accessor };
+	}
+
+	componentDidMount() {
+		console.log(questions.length);
+	}
+	render() {
+		return (
+			<GridContainer style={{maxWidth: "980px", margin: "auto"}}>
+				<GridItem xs={12}>
+					<Table
+						columns={[
+							this.header("#", "key"),
+							this.header("Artist", "artist"),
+							this.header("Lugu", "song"),
+							this.header("Kuupäev", "date")]}
+						data={questions}
+					/>
+				</GridItem>
+			</GridContainer>
+		);
+	}
 }
-
-export default App;

@@ -20,8 +20,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 // core components
 import Input from "./Input.js";
-import GridContainer from "../../components/Grid/GridContainer.js";
-import GridItem from "../../components/Grid/GridItem.js";
+import GridContainer from "./GridContainer.js";
+import GridItem from "./GridItem.js";
 
 import {
     primaryColor,
@@ -272,7 +272,7 @@ function Table({ columns, data }) {
   return (
     <>
       <div className="ReactTable -striped -highlight">
-        <table {...getTableProps()} className="rt-table">
+        <table {...getTableProps()} className="rt-table" style={{"width": "100%"}}>
           <thead className="rt-thead -header" style={{
             borderBottom: "1px solid lightgray",
             marginBottom: "10px"
