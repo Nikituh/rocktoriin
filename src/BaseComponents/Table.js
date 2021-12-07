@@ -1,182 +1,21 @@
-/*eslint-disable*/
+
 import React from "react";
 import {
   useTable,
   useFilters,
-  useAsyncDebounce,
   useSortBy,
   usePagination
 } from "react-table";
+
 import classnames from "classnames";
-// A great library for fuzzy filtering/sorting items
 import matchSorter from "match-sorter";
-// @mui/material components
-import { makeStyles } from "@mui/styles";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import InputLabel from "@mui/material/InputLabel";
-import Switch from "@mui/material/Switch";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-// core components
 import Input from "./Input.js";
-import GridContainer from "./GridContainer.js";
-import GridItem from "./GridItem.js";
-
-import {
-    primaryColor,
-    primaryBoxShadow,
-    whiteColor,
-    blackColor,
-    grayColor,
-    hexToRgb
-  } from "./Colors.js";
-
-const styles = {
-    select: {
-      padding: "12px 0 7px",
-      fontSize: ".75rem",
-      fontWeight: "600",
-      lineHeight: "1.42857",
-      textDecoration: "none",
-      textTransform: "none",
-      color: grayColor[2],
-      letterSpacing: "0",
-      "&:focus": {
-        backgroundColor: "transparent"
-      },
-      "&[aria-owns] + input + svg": {
-        transform: "rotate(180deg)"
-      },
-      "& + input + svg": {
-        transition: "all 300ms linear"
-      }
-    },
-    selectFormControl: {
-      margin: "7px 0 17px 0 !important",
-      "& > div": {
-        "&:before": {
-          borderBottomWidth: "1px !important",
-          borderBottomColor: grayColor[19] + "!important"
-        },
-        "&:after": {
-          borderBottomColor: primaryColor[0] + "!important"
-        }
-      }
-    },
-    selectLabel: {
-      fontSize: "12px",
-      textTransform: "none",
-      color: grayColor[19] + " !important",
-      top: "8px"
-    },
-    selectMenu: {
-      "& > div > ul": {
-        border: "0",
-        padding: "5px 0",
-        margin: "0",
-        boxShadow: "none",
-        minWidth: "100%",
-        borderRadius: "4px",
-        boxSizing: "border-box",
-        display: "block",
-        fontSize: "14px",
-        textAlign: "left",
-        listStyle: "none",
-        backgroundColor: whiteColor,
-        backgroundClip: "padding-box"
-      },
-      "& $selectPaper $selectMenuItemSelectedMultiple": {
-        backgroundColor: "inherit"
-      },
-      "& > div + div": {
-        maxHeight: "266px !important"
-      }
-    },
-    selectMenuItem: {
-      fontSize: "13px",
-      padding: "10px 20px",
-      margin: "0 5px",
-      borderRadius: "2px",
-      transition: "all 150ms linear",
-      display: "block",
-      clear: "both",
-      fontWeight: "400",
-      lineHeight: "2",
-      whiteSpace: "nowrap",
-      color: grayColor[7],
-      paddingRight: "30px",
-      "&:hover": {
-        backgroundColor: primaryColor[0],
-        color: whiteColor,
-        ...primaryBoxShadow
-      }
-    },
-    selectMenuItemSelected: {
-      backgroundColor: primaryColor[0] + "!important",
-      color: whiteColor
-    },
-    selectMenuItemSelectedMultiple: {
-      backgroundColor: "transparent !important",
-      "&:hover": {
-        backgroundColor: primaryColor[0] + "!important",
-        color: whiteColor,
-        ...primaryBoxShadow,
-        "&:after": {
-          color: whiteColor
-        }
-      },
-      "&:after": {
-        top: "16px",
-        right: "12px",
-        width: "12px",
-        height: "5px",
-        borderLeft: "2px solid currentColor",
-        transform: "rotate(-45deg)",
-        opacity: "1",
-        color: grayColor[2],
-        position: "absolute",
-        content: "''",
-        borderBottom: "2px solid currentColor",
-        transition: "opacity 90ms cubic-bezier(0,0,.2,.1)"
-      }
-    },
-    selectPaper: {
-      boxSizing: "borderBox",
-      borderRadius: "4px",
-      padding: "0",
-      minWidth: "100%",
-      display: "block",
-      border: "0",
-      boxShadow: "0 2px 5px 0 rgba(" + hexToRgb(blackColor) + ", 0.75)",
-      backgroundClip: "padding-box",
-      margin: "2px 0 0",
-      fontSize: "14px",
-      textAlign: "left",
-      listStyle: "none",
-      backgroundColor: "transparent",
-      maxHeight: "266px"
-    }
-  };
-
-const newStyles = {
-  ...styles,
-  formControlMargins: {
-    margin: "3px 0 !important"
-  },
-  gridContainer: {
-    justifyContent: "center"
-  }
-};
-
-const useStyles = makeStyles(newStyles);
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter }
 }) {
   const count = preFilteredRows.length;
-//   return null;
   return (
     <Input
       formControlProps={{
@@ -185,7 +24,8 @@ function DefaultColumnFilter({
       inputProps={{
         value: filterValue || "",
         onChange: e => {
-          setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+          // Set undefined to remove the filter entirely
+          setFilter(e.target.value || undefined);
         },
         placeholder: `Search ${count} records...`
       }}
@@ -202,9 +42,6 @@ fuzzyTextFilterFn.autoRemove = val => !val;
 
 // Our table component
 function Table({ columns, data }) {
-  const [numberOfRows, setNumberOfRows] = React.useState(10);
-  const [pageSelect, handlePageSelect] = React.useState(0);
-  const classes = useStyles();
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -239,16 +76,7 @@ function Table({ columns, data }) {
     headerGroups,
     page,
     prepareRow,
-    state,
-    visibleColumns,
-    nextPage,
     pageOptions,
-    pageCount,
-    previousPage,
-    canPreviousPage,
-    canNextPage,
-    setPageSize,
-    gotoPage
   } = useTable(
     {
       columns,
@@ -262,13 +90,6 @@ function Table({ columns, data }) {
     usePagination
   );
 
-  // We don't want to render all of the rows for this example, so cap
-  // it for this use case
-  // const firstPageRows = rows.slice(0, 10);
-  let pageSelectData = Array.apply(null, Array(pageOptions.length)).map(
-    function() {}
-  );
-  let numberOfRowsData = [5, 10, 20, 25, 50, 100];
   return (
     <>
       <div className="ReactTable -striped -highlight">
