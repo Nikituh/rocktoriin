@@ -1,171 +1,319 @@
-
 import React from "react";
+import cx from "classnames";
+import PropTypes from "prop-types";
+
+// @mui/material components
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+
+import {withStyles} from "@mui/styles";
+import Tooltip from "@mui/material/Tooltip";
+
 import {
-  useTable,
-  useFilters,
-  useSortBy,
-  usePagination
-} from "react-table";
+  warningColor,
+  primaryColor,
+  dangerColor,
+  successColor,
+  infoColor,
+  roseColor,
+  grayColor,
+  blackColor,
+  defaultFont,
+  hexToRgb
+} from "./Colors.js";
 
-import classnames from "classnames";
-import matchSorter from "match-sorter";
-import Input from "./Input.js";
+const styles = theme => ({
+  warning: {
+    color: warningColor[0]
+  },
+  primary: {
+    color: primaryColor[0]
+  },
+  danger: {
+    color: dangerColor[0]
+  },
+  success: {
+    color: successColor[0]
+  },
+  info: {
+    color: infoColor[0]
+  },
+  rose: {
+    color: roseColor[0]
+  },
+  gray: {
+    color: grayColor[0]
+  },
+  right: {
+    textAlign: "right"
+  },
+  table: {
+    marginBottom: "0",
+    width: "100%",
+    maxWidth: "100%",
+    backgroundColor: "transparent",
+    borderSpacing: "0",
+    borderCollapse: "collapse",
+    overflow: "auto"
+  },
+  tableShoppingHead: {
+    fontSize: "0.9em !important",
+    textTransform: "uppercase !important"
+  },
+  tableHeadFontSize: {
+    fontSize: "0.8em !important",
+    fontWeight: "600"
+  },
+  tableHeadCell: {
+    color: "rgba(" + hexToRgb(blackColor) + ", 0.87)",
+    border: "none !important"
+  },
+  tableCell: {
+    ...defaultFont,
+    lineHeight: "1.42857143",
+    padding: "6px 8px!important",
+    verticalAlign: "middle",
+    fontSize: "1em",
+    borderBottom: "none",
+    borderTop: "1px solid " + grayColor[5],
+    position: "relative",
+    [theme.breakpoints.down('md')]: {
+      minHeight: "24px",
+      minWidth: "32px"
+    }
+  },
+  tableCellTotal: {
+    fontWeight: "600",
+    fontSize: "1em",
+    paddingTop: "14px",
+    textAlign: "right"
+  },
+  tableCellSubtotal: {
+    fontWeight: "400",
+    fontSize: "1em",
+    paddingTop: "10px",
+    textAlign: "right"
+  },
+  tableCellAmount: {
+    fontSize: "17px",
+    fontWeight: "600",
+    marginTop: "5px",
+    textAlign: "right"
+  },
+  tableResponsive: {
+    // width: "100%",
+    minHeight: "0.1%",
+    overflowX: "auto"
+  },
+  tableStripedRow: {
+    backgroundColor: grayColor[12]
+  },
+  tableRowHover: {
+    "&:hover": {
+      backgroundColor: grayColor[13]
+    }
+  },
+  warningRow: {
+    backgroundColor: warningColor[6],
+    "&:hover": {
+      backgroundColor: warningColor[5]
+    }
+  },
+  dangerRow: {
+    backgroundColor: dangerColor[6],
+    "&:hover": {
+      backgroundColor: dangerColor[5]
+    }
+  },
+  successRow: {
+    backgroundColor: successColor[6],
+    "&:hover": {
+      backgroundColor: successColor[5]
+    }
+  },
+  infoRow: {
+    backgroundColor: infoColor[6],
+    "&:hover": {
+      backgroundColor: infoColor[5]
+    }
+  },
+  tableRowBody: {
+    height: "36px"
+  },
+  tableRowHead: {
+    height: "46px"
+  }
+});
 
-// Define a default UI for filtering
-function DefaultColumnFilter({
-  column: { filterValue, preFilteredRows, setFilter }
-}) {
-  const count = preFilteredRows.length;
-  return (
-    <Input
-      formControlProps={{
-        fullWidth: true
-      }}
-      inputProps={{
-        value: filterValue || "",
-        onChange: e => {
-          // Set undefined to remove the filter entirely
-          setFilter(e.target.value || undefined);
-        },
-        placeholder: `Search ${count} records...`
-      }}
-    />
-  );
-}
+class CustomTable extends React.Component {
 
-function fuzzyTextFilterFn(rows, id, filterValue) {
-  return matchSorter(rows, filterValue, { keys: [row => row.values[id]] });
-}
+    render() {
+        const { tableHead, tableData, tableHeaderColor } = this.props;
+        const classes = this.props.classes;
 
-// Let the table remove the filter if the string is empty
-fuzzyTextFilterFn.autoRemove = val => !val;
+        return (
+            <div className={classes.tableResponsive}>
+                <Table className={classes.table}>
+                    {tableHead !== undefined ? (
+                        <TableHead className={classes[tableHeaderColor]}>
+                            <TableRow className={classes.tableRow + " " + classes.tableRowHead}>
+                                {tableHead.map((prop, key) => { return this.mapHead(prop, key); })}
+                            </TableRow>
+                        </TableHead>
+                    ) : null}
+                    <TableBody>
+                        {tableData.map((prop, key) => {
+                            const hints = this.props.rowHints;
+                            if (!hints) {
+                                return this.mapBody(prop, key);
+                            }
+                            const text = hints[key];
+                            if (!text) {
+                                return this.mapBody(prop, key);
+                            }
+                            const hint = <span style={{ whiteSpace: 'pre-line' }}>{text}</span>;
+                            return <Tooltip title={hint}>{this.mapBody(prop, key)}</Tooltip>
+                        })}
+                    </TableBody>
+                </Table>
+            </div>
+        );
+    }
 
-// Our table component
-function Table({ columns, data }) {
-  const filterTypes = React.useMemo(
-    () => ({
-      // Add a new fuzzyTextFilterFn filter type.
-      fuzzyText: fuzzyTextFilterFn,
-      // Or, override the default text filter to use
-      // "startWith"
-      text: (rows, id, filterValue) => {
-        return rows.filter(row => {
-          const rowValue = row.values[id];
-          return rowValue !== undefined
-            ? String(rowValue)
-                .toLowerCase()
-                .startsWith(String(filterValue).toLowerCase())
-            : true;
+    mapHead(prop, key) {
+        const { tableShopping, customHeadCellClasses, customHeadClassesForCells} = this.props;
+        const classes = this.props.classes;
+
+        const tableCellClasses = classes.tableHeadCell + " " + classes.tableCell + " " +
+            cx({
+                [customHeadCellClasses[
+                    customHeadClassesForCells.indexOf(key)
+                    ]]: customHeadClassesForCells.indexOf(key) !== -1,
+                [classes.tableShoppingHead]: tableShopping,
+                [classes.tableHeadFontSize]: !tableShopping
+            });
+        return <TableCell className={tableCellClasses} key={key}>{prop}</TableCell>;
+    }
+
+    mapBody(prop, key) {
+        const {
+            tableHead,
+            hover,
+            colorsColls,
+            coloredColls,
+            customCellClasses,
+            customClassesForCells,
+            striped,
+        } = this.props;
+
+        const classes = this.props.classes;
+        let rowColor = "";
+        let rowColored = false;
+        if (prop.color !== undefined) {
+            rowColor = prop.color;
+            rowColored = true;
+            prop = prop.data;
+        }
+        const tableRowClasses = cx({
+            [classes.tableRowBody]: true,
+            [classes.tableRowHover]: hover,
+            [classes[rowColor + "Row"]]: rowColored,
+            [classes.tableStripedRow]: striped && key % 2 === 0
         });
-      }
-    }),
-    []
-  );
 
-  const defaultColumn = React.useMemo(
-    () => ({
-      // Let's set up our default Filter UI
-      Filter: DefaultColumnFilter
-    }),
-    []
-  );
+        if (prop.description || prop.total || prop.subtotal) {
+            return (
+                <TableRow key={key} hover={hover} className={tableRowClasses}>
+                    <TableCell className={classes.tableCell} colSpan={prop.colspan}/>
+                    <TableCell className={classes.tableCell + " " + (prop.subtotal ? classes.tableCellSubtotal : classes.tableCellTotal)}>
+                        {prop.text ?? "Total"}
+                    </TableCell>
+                    <TableCell className={classes.tableCell + " " + classes.tableCellAmount}>
+                        {prop.amount}
+                    </TableCell>
+                    {tableHead.length - (prop.colspan - 0 + 2) > 0 ? (
+                        <TableCell className={classes.tableCell} colSpan={tableHead.length - (prop.colspan - 0 + 2)}/>
+                    ) : null}
+                </TableRow>
+            );
+        }
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    prepareRow,
-    pageOptions,
-  } = useTable(
-    {
-      columns,
-      data,
-      defaultColumn, // Be sure to pass the defaultColumn option
-      filterTypes,
-      initialState: { pageSize: 100, pageIndex: 0 }
-    },
-    useFilters, // useFilters!
-    useSortBy,
-    usePagination
-  );
+        if (prop.purchase) {
+            return (
+                <TableRow key={key} hover={hover} className={tableRowClasses}>
+                    <TableCell className={classes.tableCell} colSpan={prop.colspan}/>
+                    <TableCell className={classes.tableCell + " " + classes.right} colSpan={prop.col.colspan}>
+                        {prop.col.text}
+                    </TableCell>
+                </TableRow>
+            );
+        }
+        return (
+            <TableRow key={key} hover={hover} className={classes.tableRow + " " + tableRowClasses} onClick={() => {
+                this.props.onRowClick && this.props.onRowClick(prop[0]);
+            }} >
+                {prop.map((prop, key) => {
+                    const tableCellClasses =
+                        classes.tableCell +
+                        " " +
+                        cx({
+                            [classes[colorsColls[coloredColls.indexOf(key)]]]:
+                            coloredColls.indexOf(key) !== -1,
+                            [customCellClasses[customClassesForCells.indexOf(key)]]:
+                            customClassesForCells.indexOf(key) !== -1
+                        });
 
-  return (
-    <>
-      <div className="ReactTable -striped -highlight">
-        <table {...getTableProps()} className="rt-table" style={{"width": "100%"}}>
-          <thead className="rt-thead -header" style={{
-            borderBottom: "1px solid lightgray",
-            marginBottom: "10px"
-          }}>
-            {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()} className="rt-tr">
-                {headerGroup.headers.map((column, key) => (
-                  <th
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                    className={classnames("rt-th rt-resizable-header", {
-                      "-cursor-pointer": headerGroup.headers.length - 1 !== key,
-                      "-sort-asc": column.isSorted && !column.isSortedDesc,
-                      "-sort-desc": column.isSorted && column.isSortedDesc
-                    })}
-                  >
-                    <div className="rt-resizable-header-content">
-                      {column.render("Header")}
-                    </div>
-                    {/* Render the columns filter UI */}
-                    <div>
-                      {headerGroup.headers.length - 1 === key
-                        ? null
-                        : column.canFilter
-                        ? column.render("Filter")
-                        : null}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()} className="rt-tbody">
-            {page.map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr
-                  {...row.getRowProps()}
-                  className={classnames(
-                    "rt-tr",
-                    { " -odd": i % 2 === 0 },
-                    { " -even": i % 2 === 1 }
-                  )}
-                >
-                  {row.cells.map(cell => {
+
                     return (
-                      <td {...cell.getCellProps()} className="rt-td">
-                        {cell.render("Cell")}
-                      </td>
+                        <TableCell className={tableCellClasses} key={key}>{prop}</TableCell>
                     );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
+                })}
+            </TableRow>
+        );
+    }
 }
 
-// Define a custom filter filter function!
-function filterGreaterThan(rows, id, filterValue) {
-  return rows.filter(row => {
-    const rowValue = row.values[id];
-    return rowValue >= filterValue;
-  });
-}
+export default withStyles(styles)(CustomTable);
 
-// This is an autoRemove method on the filter function that
-// when given the new filter value and returns true, the filter
-// will be automatically removed. Normally this is just an undefined
-// check, but here, we want to remove the filter if it's not a number
-filterGreaterThan.autoRemove = val => typeof val !== "number";
+CustomTable.defaultProps = {
+    tableHeaderColor: "gray",
+    hover: false,
+    colorsColls: [],
+    coloredColls: [],
+    striped: false,
+    customCellClasses: [],
+    customClassesForCells: [],
+    customHeadCellClasses: [],
+    customHeadClassesForCells: [],
+    onRowClick: undefined
+};
 
-export default Table;
+CustomTable.propTypes = {
+    tableHeaderColor: PropTypes.oneOf([
+        "warning",
+        "primary",
+        "danger",
+        "success",
+        "info",
+        "rose",
+        "gray"
+    ]),
+    tableHead: PropTypes.arrayOf(PropTypes.string),
+    // Of(PropTypes.arrayOf(PropTypes.node)) || Of(PropTypes.object),
+    tableData: PropTypes.array,
+    hover: PropTypes.bool,
+    coloredColls: PropTypes.arrayOf(PropTypes.number),
+    // Of(["warning","primary","danger","success","info","rose","gray"]) - colorsColls
+    colorsColls: PropTypes.array,
+    customCellClasses: PropTypes.arrayOf(PropTypes.string),
+    customClassesForCells: PropTypes.arrayOf(PropTypes.number),
+    customHeadCellClasses: PropTypes.arrayOf(PropTypes.string),
+    customHeadClassesForCells: PropTypes.arrayOf(PropTypes.number),
+    striped: PropTypes.bool,
+    // this will cause some changes in font
+    tableShopping: PropTypes.bool,
+    onRowClick: PropTypes.any
+};

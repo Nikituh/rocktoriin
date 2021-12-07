@@ -88,6 +88,25 @@ const primaryBoxShadow = {
         hexToRgb(primaryColor[0]) +
         ",.4)"
 };
+const warningColor = [
+    "#e5924b",
+    "#ffa726",
+    "#fb8c00",
+    "#ffa21a",
+    "#f57c00",
+    "#faf2cc",
+    "#fcf8e3"
+  ];
+const infoColor = [
+    "#fff",
+    "#fff",
+    "#ffe",
+    "#eee",
+    "#eee",
+    "#eee",
+    "#eee"
+  ];
+  const roseColor = ["#e91e63", "#ec407a", "#d81b60", "#eb3573", "#c2185b"];
 
 export {
     hexToRgb,
@@ -99,4 +118,7 @@ export {
     blackColor,
     whiteColor,
     primaryBoxShadow,
+    infoColor,
+    roseColor,
+    warningColor
   };

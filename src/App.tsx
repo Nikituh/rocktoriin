@@ -20,15 +20,17 @@ export default class App extends React.Component {
 			<GridContainer style={{maxWidth: "980px", margin: "auto"}}>
 				<GridItem xs={12}>
 					<Table
-						columns={[
-							this.header("#", "key"),
-							this.header("Artist", "artist"),
-							this.header("Lugu", "song"),
-							this.header("Kuupäev", "date")]}
-						data={questions}
+						tableHead={["#", "Artist", "Lugu", "Kuupäev"]}
+						tableData={this.map(questions)}
 					/>
 				</GridItem>
 			</GridContainer>
 		);
+	}
+
+	map(questions: any[]) {
+		return questions.map((question: any) => {
+			return [question.key, question.artist, question.song, question.date]
+		});
 	}
 }
