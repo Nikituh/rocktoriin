@@ -10,7 +10,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
 import {withStyles} from "@mui/styles";
-import Tooltip from "@mui/material/Tooltip";
 
 import {
   warningColor,
@@ -157,26 +156,13 @@ class CustomTable extends React.Component {
         return (
             <div className={classes.tableResponsive}>
                 <Table className={classes.table}>
-                    {tableHead !== undefined ? (
-                        <TableHead className={classes[tableHeaderColor]}>
-                            <TableRow className={classes.tableRow + " " + classes.tableRowHead}>
-                                {tableHead.map((prop, key) => { return this.mapHead(prop, key); })}
-                            </TableRow>
-                        </TableHead>
-                    ) : null}
+                    <TableHead className={classes[tableHeaderColor]}>
+                        <TableRow className={classes.tableRow + " " + classes.tableRowHead}>
+                            {tableHead.map((prop, key) => this.mapHead(prop, key))}
+                        </TableRow>
+                    </TableHead>
                     <TableBody>
-                        {tableData.map((prop, key) => {
-                            const hints = this.props.rowHints;
-                            if (!hints) {
-                                return this.mapBody(prop, key);
-                            }
-                            const text = hints[key];
-                            if (!text) {
-                                return this.mapBody(prop, key);
-                            }
-                            const hint = <span style={{ whiteSpace: 'pre-line' }}>{text}</span>;
-                            return <Tooltip title={hint}>{this.mapBody(prop, key)}</Tooltip>
-                        })}
+                        {tableData.map((prop, key) => this.mapBody(prop, key))}
                     </TableBody>
                 </Table>
             </div>
@@ -184,30 +170,13 @@ class CustomTable extends React.Component {
     }
 
     mapHead(prop, key) {
-        const { tableShopping, customHeadCellClasses, customHeadClassesForCells} = this.props;
         const classes = this.props.classes;
-
-        const tableCellClasses = classes.tableHeadCell + " " + classes.tableCell + " " +
-            cx({
-                [customHeadCellClasses[
-                    customHeadClassesForCells.indexOf(key)
-                    ]]: customHeadClassesForCells.indexOf(key) !== -1,
-                [classes.tableShoppingHead]: tableShopping,
-                [classes.tableHeadFontSize]: !tableShopping
-            });
+        const tableCellClasses = classes.tableHeadCell + " " + classes.tableCell;
         return <TableCell className={tableCellClasses} key={key}>{prop}</TableCell>;
     }
 
     mapBody(prop, key) {
-        const {
-            tableHead,
-            hover,
-            colorsColls,
-            coloredColls,
-            customCellClasses,
-            customClassesForCells,
-            striped,
-        } = this.props;
+        const { hover, striped } = this.props;
 
         const classes = this.props.classes;
         let rowColor = "";
@@ -224,52 +193,12 @@ class CustomTable extends React.Component {
             [classes.tableStripedRow]: striped && key % 2 === 0
         });
 
-        if (prop.description || prop.total || prop.subtotal) {
-            return (
-                <TableRow key={key} hover={hover} className={tableRowClasses}>
-                    <TableCell className={classes.tableCell} colSpan={prop.colspan}/>
-                    <TableCell className={classes.tableCell + " " + (prop.subtotal ? classes.tableCellSubtotal : classes.tableCellTotal)}>
-                        {prop.text ?? "Total"}
-                    </TableCell>
-                    <TableCell className={classes.tableCell + " " + classes.tableCellAmount}>
-                        {prop.amount}
-                    </TableCell>
-                    {tableHead.length - (prop.colspan - 0 + 2) > 0 ? (
-                        <TableCell className={classes.tableCell} colSpan={tableHead.length - (prop.colspan - 0 + 2)}/>
-                    ) : null}
-                </TableRow>
-            );
-        }
-
-        if (prop.purchase) {
-            return (
-                <TableRow key={key} hover={hover} className={tableRowClasses}>
-                    <TableCell className={classes.tableCell} colSpan={prop.colspan}/>
-                    <TableCell className={classes.tableCell + " " + classes.right} colSpan={prop.col.colspan}>
-                        {prop.col.text}
-                    </TableCell>
-                </TableRow>
-            );
-        }
         return (
             <TableRow key={key} hover={hover} className={classes.tableRow + " " + tableRowClasses} onClick={() => {
                 this.props.onRowClick && this.props.onRowClick(prop[0]);
             }} >
                 {prop.map((prop, key) => {
-                    const tableCellClasses =
-                        classes.tableCell +
-                        " " +
-                        cx({
-                            [classes[colorsColls[coloredColls.indexOf(key)]]]:
-                            coloredColls.indexOf(key) !== -1,
-                            [customCellClasses[customClassesForCells.indexOf(key)]]:
-                            customClassesForCells.indexOf(key) !== -1
-                        });
-
-
-                    return (
-                        <TableCell className={tableCellClasses} key={key}>{prop}</TableCell>
-                    );
+                    return <TableCell className={classes.tableCell} key={key}>{prop}</TableCell>
                 })}
             </TableRow>
         );
@@ -281,13 +210,7 @@ export default withStyles(styles)(CustomTable);
 CustomTable.defaultProps = {
     tableHeaderColor: "gray",
     hover: false,
-    colorsColls: [],
-    coloredColls: [],
-    striped: false,
-    customCellClasses: [],
-    customClassesForCells: [],
-    customHeadCellClasses: [],
-    customHeadClassesForCells: [],
+    striped: true,
     onRowClick: undefined
 };
 
@@ -302,18 +225,8 @@ CustomTable.propTypes = {
         "gray"
     ]),
     tableHead: PropTypes.arrayOf(PropTypes.string),
-    // Of(PropTypes.arrayOf(PropTypes.node)) || Of(PropTypes.object),
     tableData: PropTypes.array,
     hover: PropTypes.bool,
-    coloredColls: PropTypes.arrayOf(PropTypes.number),
-    // Of(["warning","primary","danger","success","info","rose","gray"]) - colorsColls
-    colorsColls: PropTypes.array,
-    customCellClasses: PropTypes.arrayOf(PropTypes.string),
-    customClassesForCells: PropTypes.arrayOf(PropTypes.number),
-    customHeadCellClasses: PropTypes.arrayOf(PropTypes.string),
-    customHeadClassesForCells: PropTypes.arrayOf(PropTypes.number),
     striped: PropTypes.bool,
-    // this will cause some changes in font
-    tableShopping: PropTypes.bool,
     onRowClick: PropTypes.any
 };
