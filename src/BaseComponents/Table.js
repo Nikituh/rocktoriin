@@ -150,7 +150,7 @@ const styles = theme => ({
 class CustomTable extends React.Component {
 
     render() {
-        const { tableHead, tableData, tableHeaderColor } = this.props;
+        const { head, data, tableHeaderColor } = this.props;
         const classes = this.props.classes;
 
         return (
@@ -158,11 +158,11 @@ class CustomTable extends React.Component {
                 <Table className={classes.table}>
                     <TableHead className={classes[tableHeaderColor]}>
                         <TableRow className={classes.tableRow + " " + classes.tableRowHead}>
-                            {tableHead.map((prop, key) => this.mapHead(prop, key))}
+                            {head.map((prop, key) => this.mapHead(prop, key))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {tableData.map((prop, key) => this.mapBody(prop, key))}
+                        {data.map((prop, key) => this.mapBody(prop, key))}
                     </TableBody>
                 </Table>
             </div>
@@ -196,7 +196,7 @@ class CustomTable extends React.Component {
         return (
             <TableRow key={key} hover={hover} className={classes.tableRow + " " + tableRowClasses} onClick={() => {
                 this.props.onRowClick && this.props.onRowClick(prop[0]);
-            }} >
+            }}>
                 {prop.map((prop, key) => {
                     return <TableCell className={classes.tableCell} key={key}>{prop}</TableCell>
                 })}
