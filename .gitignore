@@ -26,4 +26,5 @@ yarn-error.log*
 
 data/Küsitud lood - Lood.csv
 data/questions.json
+data/questions.csv
 src/Model/questions.json

@@ -1,8 +1,15 @@
 
 import csv
 import json
- 
-csvFilePath = r'Küsitud lood - Lood.csv'
+import requests as rs
+
+document_id = "1i9H25hTawxur82lsrdNuArV3JJuoKlvjq353RaUnuAk"
+url = "https://docs.google.com/spreadsheets/d/" + document_id + "/export?format=csv&id=" + document_id + "&gid=0"
+
+res=rs.get(url=url)
+open('questions.csv', 'wb').write(res.content)
+
+csvFilePath = r'questions.csv'
 jsonFilePath = r'../src/Model/questions.json'
  
 output = []
