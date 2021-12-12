@@ -9,7 +9,16 @@ export default class Question {
 
     song?: string;
 
-    date?: string;
+    date?: Date;
+
+    constructor(json: any) {
+        this.key = json.key;
+        this.artist = json.artist;
+        this.song = json.song;
+
+        const numbers = json.date.split(".");
+        this.date = new Date(numbers[2], numbers[1] - 1, numbers[0]);
+    }
 
     artistContains(filter: string): Boolean {
         return this.containsLowerCase(this.artist, filter);

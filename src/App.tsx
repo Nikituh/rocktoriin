@@ -1,9 +1,13 @@
 
 import React from 'react';
+
 import GridContainer from './BaseComponents/GridContainer';
-import Question from './Model/Question';
+
+import IntroductionView from './Subviews/IntroductionView';
 import QuestionList from './Subviews/List/QuestionList';
-import Statistics from './Subviews/Statistics';
+import StatisticsView from './Subviews/StatisticsView';
+
+import Question from './Model/Question';
 
 export default class App extends React.Component<any, any> {
 
@@ -18,7 +22,9 @@ export default class App extends React.Component<any, any> {
 		const questions: Question[] = [];
 		const data = require("./Model/questions.json");
 		data.forEach((item: any) => {
-			questions.push(Object.assign(new Question(), item));
+			if (item) {
+				questions.push(new Question(item));
+			}
 		});
 
 		this.setState({
@@ -30,7 +36,8 @@ export default class App extends React.Component<any, any> {
 		
 		return (
 			<GridContainer style={{maxWidth: "980px", margin: "60px auto"}}>
-				<Statistics questions={this.state.questions}/>
+				<IntroductionView questions={this.state.questions}/>
+				<StatisticsView questions={this.state.questions}/>
 				<QuestionList questions={this.state.questions}/>
 			</GridContainer>
 		);

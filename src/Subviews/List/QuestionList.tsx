@@ -8,6 +8,7 @@ import Table from "../../BaseComponents/Table";
 
 import Header from "./Header";
 import Question from "../../Model/Question";
+import DateUtils from "../../Utils/DateUtils";
 
 export default class QuestionList extends React.Component<any, any> {
 
@@ -71,7 +72,7 @@ export default class QuestionList extends React.Component<any, any> {
         for (let i = start; i < count; i++) {
             const question = filtered[i];
             if (question) {
-                result.push([question.key, question.artist, question.song, question.date]);
+                result.push([question.key, question.artist, question.song, DateUtils.toShortString(question.date)]);
             }
         }
 
