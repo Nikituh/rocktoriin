@@ -1,5 +1,6 @@
 
 import React from "react";
+import Artist from "../Model/most-asked/Artist";
 import Question from "../Model/Question";
 
 export default class Statistics extends React.Component<any, any> {
@@ -12,11 +13,13 @@ export default class Statistics extends React.Component<any, any> {
         if (!this.props.questions) {
             return null;
         }
-        const mostAsked = Question.findMostPopularArtist(this.props.questions);
-        console.log(mostAsked);
+        const top = Question.findPopularArtists(this.props.questions);
+        
         return (
             <div>
-                {mostAsked.name + ": " + mostAsked.songs.length}
+                {top.map((artist: Artist) => {
+                    return <div key={artist.key}>{artist.name + ": " + artist.songs.length}</div>
+                })}
             </div>
         );
     }

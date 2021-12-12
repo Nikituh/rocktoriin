@@ -26,7 +26,7 @@ export default class Question {
         return source.toLowerCase().includes(filter.toLowerCase())
     }
 
-    static findMostPopularArtist(questions: Question[]) {
+    static findPopularArtists(questions: Question[]): Artist[] {
         
         const artists: Artist[] = [];
 
@@ -49,17 +49,11 @@ export default class Question {
             }
         });
 
-        let highest: Artist;
-
-        artists.forEach((artist: Artist) => {
-            if (!highest) {
-                highest = artist;
-            }
-            if (highest.songs.length < artist.songs.length) {
-                highest = artist;
-            }
+        artists.sort((a: Artist, b: Artist) => {
+            return b.songs.length - a.songs.length;
         });
-        return highest!;
+        
+        return artists.slice(0, 5);
 
     }
 }
