@@ -38,6 +38,7 @@ export default class App extends React.Component<any, any> {
 			<GridContainer style={{maxWidth: "980px", margin: "60px auto"}}>
 				<IntroductionView questions={this.state.questions}/>
 				<StatisticsView questions={this.state.questions}/>
+				<div style={{height: "30px", width: "1px"}}/>
 				<QuestionList questions={this.state.questions}/>
 			</GridContainer>
 		);

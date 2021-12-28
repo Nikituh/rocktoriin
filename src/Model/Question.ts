@@ -51,15 +51,15 @@ export default class Question {
             }
             const existing = artists.find((item: Artist) => item.key === artist.key);
             if (existing) {
-                existing.songs.push(song)
+                existing.add(song)
             } else {
-                artist.songs.push(song);
+                artist.add(song);
                 artists.push(artist);
             }
         });
 
         artists.sort((a: Artist, b: Artist) => {
-            return b.songs.length - a.songs.length;
+            return Artist.totalSongsOf(b) - Artist.totalSongsOf(a);
         });
         
         return artists.slice(0, 5);

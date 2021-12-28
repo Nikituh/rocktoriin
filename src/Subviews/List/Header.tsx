@@ -7,7 +7,8 @@ export default class Header extends React.Component<any, any> {
     render() {
         return (
             <div style={{height: "50px"}}>
-                <Input style={{marginLeft: "5px"}} placeholder={"Filtreeri..."} onChange={(e) => {
+                <span style={{fontWeight: "bold", paddingRight: "7px"}}>All songs</span>
+                <Input style={{marginLeft: "5px"}} placeholder={"Filter..."} onChange={(e) => {
                     this.props.filter(e.target.value);
                 }}></Input>
             </div>
