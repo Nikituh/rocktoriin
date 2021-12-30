@@ -59,7 +59,7 @@ export default class Question {
             }
         });
 
-        return this.sortAndSlice(artists, Artist.totalSongsOf);
+        return this.sortAndSlice(artists, Artist.subgroupTotal);
     }
 
     static findPopularSongs(questions: Question[]): Song[] {
@@ -84,7 +84,7 @@ export default class Question {
             }
         });
 
-        return this.sortAndSlice(songs, Song.totalArtistsOf)
+        return this.sortAndSlice(songs, Song.subgroupTotal)
     }
 
     private static sortAndSlice(array: any[], comparator: (input: any) => number) {
@@ -92,6 +92,6 @@ export default class Question {
             return comparator(b) - comparator(a);
         });
         
-        return array.slice(0, 5);
+        return array.slice(0, 9);
     }
 }

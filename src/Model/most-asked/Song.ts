@@ -1,37 +1,22 @@
+
 import Question from "../Question";
 import KeyWithCounter from "./KeyWithCounter";
+import MostAskedItem from "./MostAskedItem";
 
-export default class Song {
+import StringUtils from "../../Utils/StringUtils";
 
-    key!: string;
-    
-    name!: string;
-
-    artists!: KeyWithCounter[];
+export default class Song extends MostAskedItem {
     
     static from(question: Question): Song {
         const result = new Song();
         result.name = question.song ?? "-";
+        result.key = StringUtils.clean(result.name);
+        result.subgroup = [];
 
-        result.artists = [];
         if (question.artist) {
-            result.artists.push(new KeyWithCounter(question.artist));
+            result.subgroup.push(new KeyWithCounter(question.artist));
         }
         
         return result;
     }
-
-    add(key: string) {
-        const found = this.artists.find(((existing: KeyWithCounter) => existing.name === key));
-        if (found) {
-            found.count++;
-        } else {
-            this.artists.push(new KeyWithCounter(key));
-        }
-    }
-
-    static totalArtistsOf(song: Song): number {
-        return song.artists.length;
-    }
-    
 }

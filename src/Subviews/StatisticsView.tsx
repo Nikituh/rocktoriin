@@ -27,16 +27,17 @@ export default class Statistics extends React.Component<any, any> {
                 <GridItem>
                     <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Küsitumad artistid</div>
                     {topArtists.map((artist: Artist, index: number) => {
-                        return <Tooltip key={artist.key} title={this.renderSongList(artist)} followCursor={true}>
-                            <div>{(index + 1) + ". " + artist.name + ": "}<strong>{Artist.totalSongsOf(artist)}</strong></div>
+                        console.log(artist.key);
+                        return <Tooltip key={artist.key} title={this.renderKeyWithCounter(artist.subgroup)} followCursor={true}>
+                            <div key={artist.key}>{(index + 1) + ". " + artist.name + ": "}<strong>{Artist.subgroupTotal(artist)}</strong></div>
                         </Tooltip>
                     })}
                 </GridItem>
                 <GridItem>
                     <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Küsitumad lood</div>
                     {topSongs.map((song: Song, index: number) => {
-                        return <Tooltip key={song.key} title={this.renderArtistList(song)} followCursor={true}>
-                            <div>{(index + 1) + ". " + song.name + ": "}<strong>{Song.totalArtistsOf(song)}</strong></div>
+                        return <Tooltip key={song.key} title={this.renderKeyWithCounter(song.subgroup)} followCursor={true}>
+                            <div key={song.key}>{(index + 1) + ". " + song.name + ": "}<strong>{Song.subgroupTotal(song)}</strong></div>
                         </Tooltip>
                     })}
                 </GridItem>
@@ -45,14 +46,8 @@ export default class Statistics extends React.Component<any, any> {
         );
     }
 
-    renderSongList(artist: Artist) {
-        return artist.songs.map((song: KeyWithCounter, index: number) => {
-            return <div>{this.indexWithPadding(index) + ". " + song.name + this.addMultiplierIfMultiple(song)}</div>;
-        });
-    }
-
-    renderArtistList(song: Song) {
-        return song.artists.map((artist: KeyWithCounter, index: number) => {
+    renderKeyWithCounter(items: KeyWithCounter[]) {
+        return items.map((artist: KeyWithCounter, index: number) => {
             return <div>{this.indexWithPadding(index) + ". " + artist.name + this.addMultiplierIfMultiple(artist)}</div>;
         });
     }
