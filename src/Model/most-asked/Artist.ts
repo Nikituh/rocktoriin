@@ -11,10 +11,12 @@ export default class Artist extends MostAskedItem {
         if (!question.artist) {
             return null;
         }
-        
+
         const artist = new Artist();
         artist.key = StringUtils.clean(question.artist);
         artist.name = question.artist;
+        artist.date = question.date!;
+        
         artist.subgroup = [];
 
         return artist;

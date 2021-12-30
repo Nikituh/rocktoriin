@@ -1,9 +1,10 @@
 
+import StringUtils from "../Utils/StringUtils";
 import Artist from "./most-asked/Artist";
 import Song from "./most-asked/Song";
 
 export default class Question {
-    
+
     key?: string;
 
     artist?: string;
@@ -37,11 +38,11 @@ export default class Question {
     }
 
     static findPopularArtists(questions: Question[]): Artist[] {
-        
+
         const artists: Artist[] = [];
 
         questions.forEach((question: Question) => {
-            
+
             const artist = Artist.from(question);
             const song = question.song;
             if (!artist) {
@@ -87,11 +88,58 @@ export default class Question {
         return this.sortAndSlice(songs, Song.subgroupTotal)
     }
 
+    static findMostPopularArtistForYear(questions: Question[]) {
+
+        const forYear: any = {};
+        questions.forEach((question: Question) => {
+            const year = question.date!.getFullYear();
+            if (forYear[year]) {
+                forYear[year].push(question);
+            } else {
+                forYear[year] = [question];
+            }
+        });
+
+        Object.keys(forYear).forEach((key: string) => {
+            const questionForYear: Question[] = forYear[key];
+            let sorted: any = {};
+
+            questionForYear.forEach((question: Question) => {
+                const key = StringUtils.clean(question.artist!);
+
+                if (key === "") {
+                    return;
+                }
+                if (key === "pildid") {
+                    return;
+                }
+
+                if (sorted[key]) {
+                    sorted[key] += 1;
+                } else {
+                    sorted[key] = 1;
+                }
+            });
+
+            // Create items array
+            var items = Object.keys(sorted).map(function(key) {
+                return [key, sorted[key]];
+            });
+
+            // Sort the array based on the second element
+            items.sort(function(first, second) {
+                return second[1] - first[1];
+            });
+
+            console.log(key + ": " + items);
+        });
+
+    }
     private static sortAndSlice(array: any[], comparator: (input: any) => number) {
         array.sort((a: any, b: any) => {
             return comparator(b) - comparator(a);
         });
-        
+
         return array.slice(0, 9);
     }
 }

@@ -19,7 +19,8 @@ export default class Statistics extends React.Component<any, any> {
         }
         const topArtists = Question.findPopularArtists(this.props.questions);
         const topSongs = Question.findPopularSongs(this.props.questions);
-
+        Question.findMostPopularArtistForYear(this.props.questions);
+        
         return (
             <Card style={StyleUtils.card()}>
                 <GridContainer>

@@ -7,6 +7,8 @@ export default class MostAskedItem {
     
     name!: string;
 
+    date!: Date;
+    
     subgroup!: KeyWithCounter[];
     
     add(key: string) {

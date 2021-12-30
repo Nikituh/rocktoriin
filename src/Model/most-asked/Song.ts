@@ -11,6 +11,8 @@ export default class Song extends MostAskedItem {
         const result = new Song();
         result.name = question.song ?? "-";
         result.key = StringUtils.clean(result.name);
+        result.date = question.date!;
+
         result.subgroup = [];
 
         if (question.artist) {
