@@ -8,9 +8,8 @@ import GridItem from "../BaseComponents/GridItem";
 import GridContainer from "../BaseComponents/GridContainer";
 
 import Question from "../Model/Question";
-import Artist from "../Model/most-asked/Artist";
-import Song from "../Model/most-asked/Song";
 import KeyWithCounter from "../Model/most-asked/KeyWithCounter";
+import MostAskedItem from "../Model/most-asked/MostAskedItem";
 
 export default class Statistics extends React.Component<any, any> {
 
@@ -24,25 +23,28 @@ export default class Statistics extends React.Component<any, any> {
         return (
             <Card style={StyleUtils.card()}>
                 <GridContainer>
-                <GridItem>
-                    <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Küsitumad artistid</div>
-                    {topArtists.map((artist: Artist, index: number) => {
-                        console.log(artist.key);
-                        return <Tooltip key={artist.key} title={this.renderKeyWithCounter(artist.subgroup)} followCursor={true}>
-                            <div key={artist.key}>{(index + 1) + ". " + artist.name + ": "}<strong>{Artist.subgroupTotal(artist)}</strong></div>
-                        </Tooltip>
-                    })}
-                </GridItem>
-                <GridItem>
-                    <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Küsitumad lood</div>
-                    {topSongs.map((song: Song, index: number) => {
-                        return <Tooltip key={song.key} title={this.renderKeyWithCounter(song.subgroup)} followCursor={true}>
-                            <div key={song.key}>{(index + 1) + ". " + song.name + ": "}<strong>{Song.subgroupTotal(song)}</strong></div>
-                        </Tooltip>
-                    })}
-                </GridItem>
+                    {this.renderTop("Küsitumad artistid", topArtists)}
+                    {this.renderTop("Küsitumad lood", topSongs)}
                 </GridContainer>
             </Card>
+        );
+    }
+
+    renderTop(title: string, array: MostAskedItem[]): JSX.Element {
+        return (
+            <GridItem>
+                <div style={{ fontWeight: "bold", paddingBottom: "5px" }}>{title}</div>
+                {array.map((item: MostAskedItem, index: number) => {
+                    return (
+                        <Tooltip key={item.key} title={this.renderKeyWithCounter(item.subgroup)} followCursor={true}>
+                            <div key={item.key}>
+                                {(index + 1) + ". " + item.name + ": "}
+                                <strong>{MostAskedItem.subgroupTotal(item)}</strong>
+                            </div>
+                        </Tooltip>
+                    );
+                })}
+            </GridItem>
         );
     }
 
