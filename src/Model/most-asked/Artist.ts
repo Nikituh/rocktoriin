@@ -1,15 +1,5 @@
 import Question from "../Question";
-
-export class ArtistSong {
-    
-    name!: string;
-    count!: number;
-
-    constructor(name: string) {
-        this.name = name;
-        this.count = 1;
-    }
-}
+import KeyWithCounter from "./KeyWithCounter";
 
 export default class Artist {
     
@@ -17,7 +7,7 @@ export default class Artist {
 
     name!: string;
 
-    songs!: ArtistSong[];
+    songs!: KeyWithCounter[];
 
     static from(question: Question): Artist | null {
 
@@ -33,18 +23,18 @@ export default class Artist {
     }
 
     add(song: string) {
-        const found = this.songs.find(((existing: ArtistSong) => existing.name === song));
+        const found = this.songs.find(((existing: KeyWithCounter) => existing.name === song));
         if (found) {
             found.count++;
         } else {
-            this.songs.push(new ArtistSong(song));
+            this.songs.push(new KeyWithCounter(song));
         }
     }
        
     public static totalSongsOf(artist: Artist): number {
         let result = 0;
 
-        artist.songs.forEach((song: ArtistSong) => {
+        artist.songs.forEach((song: KeyWithCounter) => {
             result += song.count;
         });
 

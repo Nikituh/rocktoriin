@@ -1,5 +1,6 @@
 
 import Artist from "./most-asked/Artist";
+import Song from "./most-asked/Song";
 
 export default class Question {
     
@@ -58,11 +59,39 @@ export default class Question {
             }
         });
 
-        artists.sort((a: Artist, b: Artist) => {
-            return Artist.totalSongsOf(b) - Artist.totalSongsOf(a);
+        return this.sortAndSlice(artists, Artist.totalSongsOf);
+    }
+
+    static findPopularSongs(questions: Question[]): Song[] {
+        const songs: Song[] = [];
+
+        questions.forEach((question: Question) => {
+
+            const song = question.song;
+
+            if (!song) {
+                return;
+            }
+            if (song === "kõne") {
+                return;
+            }
+
+            const existing = songs.find((item: Song) => item.name === song);
+            if (existing) {
+                existing.add(question.artist ?? "(Blank)");
+            } else {
+                songs.push(Song.from(question));
+            }
+        });
+
+        return this.sortAndSlice(songs, Song.totalArtistsOf)
+    }
+
+    private static sortAndSlice(array: any[], comparator: (input: any) => number) {
+        array.sort((a: any, b: any) => {
+            return comparator(b) - comparator(a);
         });
         
-        return artists.slice(0, 5);
-
+        return array.slice(0, 5);
     }
 }

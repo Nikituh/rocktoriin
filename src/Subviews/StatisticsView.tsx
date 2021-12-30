@@ -3,10 +3,14 @@ import React from "react";
 
 import { Card, Tooltip } from "@mui/material";
 
-import Artist, { ArtistSong } from "../Model/most-asked/Artist";
-import Question from "../Model/Question";
-
 import StyleUtils from "../Utils/StyleUtils";
+import GridItem from "../BaseComponents/GridItem";
+import GridContainer from "../BaseComponents/GridContainer";
+
+import Question from "../Model/Question";
+import Artist from "../Model/most-asked/Artist";
+import Song from "../Model/most-asked/Song";
+import KeyWithCounter from "../Model/most-asked/KeyWithCounter";
 
 export default class Statistics extends React.Component<any, any> {
 
@@ -14,23 +18,42 @@ export default class Statistics extends React.Component<any, any> {
         if (!this.props.questions) {
             return null;
         }
-        const top = Question.findPopularArtists(this.props.questions);
+        const topArtists = Question.findPopularArtists(this.props.questions);
+        const topSongs = Question.findPopularSongs(this.props.questions);
 
         return (
             <Card style={StyleUtils.card()}>
-                <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Most asked artists (hover to see songs)</div>
-                {top.map((artist: Artist, index: number) => {
-                    return <Tooltip key={artist.key} title={this.renderSongList(artist)}>
-                        <div>{(index + 1) + ". " + artist.name + ": "}<strong>{Artist.totalSongsOf(artist)}</strong></div>
-                    </Tooltip>
-                })}
+                <GridContainer>
+                <GridItem>
+                    <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Küsitumad artistid</div>
+                    {topArtists.map((artist: Artist, index: number) => {
+                        return <Tooltip key={artist.key} title={this.renderSongList(artist)} followCursor={true}>
+                            <div>{(index + 1) + ". " + artist.name + ": "}<strong>{Artist.totalSongsOf(artist)}</strong></div>
+                        </Tooltip>
+                    })}
+                </GridItem>
+                <GridItem>
+                    <div style={{fontWeight: "bold", paddingBottom: "5px"}}>Küsitumad lood</div>
+                    {topSongs.map((song: Song, index: number) => {
+                        return <Tooltip key={song.key} title={this.renderArtistList(song)} followCursor={true}>
+                            <div>{(index + 1) + ". " + song.name + ": "}<strong>{Song.totalArtistsOf(song)}</strong></div>
+                        </Tooltip>
+                    })}
+                </GridItem>
+                </GridContainer>
             </Card>
         );
     }
 
     renderSongList(artist: Artist) {
-        return artist.songs.map((song: ArtistSong, index: number) => {
+        return artist.songs.map((song: KeyWithCounter, index: number) => {
             return <div>{this.indexWithPadding(index) + ". " + song.name + this.addMultiplierIfMultiple(song)}</div>;
+        });
+    }
+
+    renderArtistList(song: Song) {
+        return song.artists.map((artist: KeyWithCounter, index: number) => {
+            return <div>{this.indexWithPadding(index) + ". " + artist.name + this.addMultiplierIfMultiple(artist)}</div>;
         });
     }
 
@@ -43,7 +66,7 @@ export default class Statistics extends React.Component<any, any> {
         return bullet.toString();
     }
 
-    addMultiplierIfMultiple(song: ArtistSong): string {
+    addMultiplierIfMultiple(song: KeyWithCounter): string {
         if (song.count > 1) {
             return " (x" + song.count + ")";
         }
